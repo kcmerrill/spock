@@ -1,0 +1,5 @@
+slack:
+    params: token=1234 channel=#general
+
+email:
+    params: to=kcmerrill@gmail.com subject=Shit is broke yo
