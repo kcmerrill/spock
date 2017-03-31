@@ -7,5 +7,10 @@ import (
 )
 
 func main() {
-	spock.New(".", crush.CreateQ(), genie.New("/tmp/", "", ""))
+	dir := "."
+	spock.New(
+		dir,
+		crush.CreateQ(),
+		genie.New(dir, "", ""),
+	)
 }

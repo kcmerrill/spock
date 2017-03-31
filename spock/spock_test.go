@@ -1,10 +1,7 @@
 package spock
 
 import (
-	"fmt"
 	"testing"
-
-	"reflect"
 
 	"github.com/kcmerrill/crush/crush"
 	"github.com/kcmerrill/genie/genie"
@@ -21,12 +18,17 @@ func TestChecks(t *testing.T) {
 	if c, exists := s.Checks["kcmerrill.com"]; !exists {
 		t.Fatalf("Expecting the check 'kcmerrill.com'")
 	} else {
-		fmt.Println(c.Module)
 		if url, urlExists := c.Module["url"]; !urlExists || url != "kcmerrill.com" {
 			t.Fatalf("Expecting the url to be 'kcmerrill.com")
 		}
 
-		fmt.Println(reflect.TypeOf(c.Params))
+		if c.Params != "status=200 contains=digital" {
+			t.Fatalf("Expecting parmas to be 'status=200 contains=digital'")
+		}
+
+		// while we are here, lets check the params to the CLI as well
+		cli := c.ParamsCli(c.Params)
+
 	}
 }
 
