@@ -6,8 +6,11 @@ import (
 	"os"
 	"strings"
 
+	"time"
+
 	"github.com/kcmerrill/crush/crush"
 	"github.com/kcmerrill/genie/genie"
+	"github.com/kcmerrill/spock/channels"
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,9 +22,15 @@ func New(dir string, queue *crush.Q, lambda *genie.Genie) *Spock {
 		Dir:    dir,
 	}
 
+	// load defaults out of the box
+	spock.LoadDefaults()
+
 	// load channels and checks
 	spock.LoadChannels()
 	spock.LoadChecks()
+
+	// continously watch channels and check
+	spock.WatchChannelsAndChecks()
 
 	// return the goods
 	return spock
@@ -50,6 +59,12 @@ func (s *Spock) LoadChannels() string {
 	return contents
 }
 
+// LoadDefaults will load all of our defaults to get spock running out of the box
+func (s *Spock) LoadDefaults() {
+	// add our url check
+	s.Lambda.AddLambda(genie.NewCodeLambda("url", channels.URL))
+}
+
 func (s *Spock) loader(file string) string {
 	if _, err := os.Stat(file); err == nil {
 		if files, dirErr := ioutil.ReadDir(file); dirErr == nil {
@@ -71,4 +86,18 @@ func (s *Spock) loader(file string) string {
 	}
 	// boo!
 	return ""
+}
+
+// WatchChannelsAndChecks will continously watch the channels and checks and reload them
+func (s *Spock) WatchChannelsAndChecks() {
+	go func() {
+		for {
+			// Load every thirty seconds. We can make this configurable later
+			<-time.After(30 * time.Second)
+
+			// load channels and checks
+			s.LoadChannels()
+			s.LoadChecks()
+		}
+	}()
 }
