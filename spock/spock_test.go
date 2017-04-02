@@ -7,6 +7,18 @@ import (
 	"github.com/kcmerrill/genie/genie"
 )
 
+func TestChannels(t *testing.T) {
+	s := New("../test/sample_b/", crush.CreateQ(), genie.New("test/lambdas", "", ""))
+	if c, exists := s.Channels["slack"]; !exists {
+		t.Fatalf("Unable to parse channels 'slack'")
+	} else {
+		// the channel params should be set
+		if c.Params != "token=1234 channel=#general" {
+			t.Fatalf("Unable to parse params from the channels yaml file")
+		}
+	}
+}
+
 func TestChecks(t *testing.T) {
 	s := New("../test/sample_b/", crush.CreateQ(), genie.New("test/lambdas", "", ""))
 	/*
@@ -18,17 +30,24 @@ func TestChecks(t *testing.T) {
 	if c, exists := s.Checks["kcmerrill.com"]; !exists {
 		t.Fatalf("Expecting the check 'kcmerrill.com'")
 	} else {
-		if url, urlExists := c.Module["url"]; !urlExists || url != "kcmerrill.com" {
-			t.Fatalf("Expecting the url to be 'kcmerrill.com")
-		}
-
+		// just verify we got the goods back :)
 		if c.Params != "status=200 contains=digital" {
-			t.Fatalf("Expecting parmas to be 'status=200 contains=digital'")
+			t.Fatalf("Expeced kcmerrill.com params to be 'status=200 contains=digital")
 		}
 
-		// while we are here, lets check the params to the CLI as well
-		cli := c.ParamsCli(c.Params)
+		// verify notifications
+		if c.Notify != "email slack" {
+			t.Fatalf("Notifycation for kcmerrill.com should be email and slack")
+		}
 
+		// Verify the modules are being parsed properly
+		if url, modExists := c.Module["url"]; modExists {
+			if url != "kcmerrill.com" {
+				t.Fatalf("Unable to parse modules. In this case kcmerrill.com -> url: kcmerrill.com")
+			}
+		} else {
+			t.Fatalf("kcmerrill.com -> url -> kcmerrill.com should exist!")
+		}
 	}
 }
 

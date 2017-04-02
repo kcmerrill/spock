@@ -18,8 +18,12 @@ func New(dir string, queue *crush.Q, lambda *genie.Genie) *Spock {
 		Lambda: lambda,
 		Dir:    dir,
 	}
+
+	// load channels and checks
 	spock.LoadChannels()
 	spock.LoadChecks()
+
+	// return the goods
 	return spock
 }
 
