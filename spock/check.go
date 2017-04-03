@@ -7,7 +7,6 @@ type Check struct {
 	Params string            `yaml:"params"`
 	Notify string            `yaml:"notify"`
 	Module map[string]string `yaml:",inline"`
-	Every  string            `yaml:"every"`
 	Cron   string            `yaml:"cron"`
 	Try    int               `yaml:"try"`
 	Takes  string            `yaml:"takes"`

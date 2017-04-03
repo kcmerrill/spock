@@ -24,6 +24,8 @@ func New(dir string, Q *crush.Q, lambda *genie.Genie) *Spock {
 		Cron:   cron.New(),
 	}
 
+	log.SetLevel(log.DebugLevel)
+
 	// Create our locks for our maps
 	spock.Locks = make(map[string]*sync.Mutex)
 	spock.Locks["Channels"] = &sync.Mutex{}
@@ -112,7 +114,10 @@ func (s *Spock) WatchChannelsAndChecks() {
 	go func() {
 		for {
 			// do this action every 1minute, at least for now
-			<-time.After(1 * time.Minute)
+			<-time.After(1 * time.Second)
+
+			// let everybody know
+			log.WithFields(log.Fields{"location": s.Dir}).Debug("Reloading configuration")
 
 			// load channels and checks
 			s.LoadChecks()
@@ -129,25 +134,14 @@ func (s *Spock) Conn() {
 	s.Cron.Stop()
 	s.Cron = cron.New()
 	for name, check := range s.Checks {
-		log.WithFields(log.Fields{"name": name}).Debug("checking ...")
-		// every is set ...
-		if check.Every != "" {
-			// does it start with an "@"?
-			if strings.HasPrefix(check.Every, "@") {
-				s.Cron.AddFunc(check.Every, func() { s.Producer(name, check) })
-			} else {
-				s.Cron.AddFunc("@every "+check.Every, func() { s.Producer(name, check) })
-			}
-		}
-
 		// cron is set ...
 		if check.Cron != "" {
 			s.Cron.AddFunc(check.Cron, func() { s.Producer(name, check) })
-		}
-
-		// come on man! give me something!
-		if check.Cron == "" && check.Every == "" {
-			s.Cron.AddFunc("@every 1m", func() { s.Producer(name, check) })
+			log.WithFields(log.Fields{"name": name, "cron": check.Cron}).Debug("Loaded")
+		} else {
+			// come on man! give me something!
+			s.Cron.AddFunc("0 * * * * *", func() { s.Producer(name, check) })
+			log.WithFields(log.Fields{"name": name, "every": "default(1m)"}).Debug("Loaded")
 		}
 	}
 	s.Cron.Start()
@@ -159,14 +153,12 @@ func (s *Spock) Producer(name string, check *Check) {
 		// create a new message
 		msg := crush.NewMessage(topic, name, "")
 
-		// How many times should we try this before failing?
-		if check.Try != 0 {
-			msg.Attempts = check.Try
-		}
+		// we will take care of attempts, notifications, etc later ...
+		msg.Attempts = 1
 
 		// How long does it take?
 		if check.Takes == "" {
-			msg.Flight = "10s"
+			msg.Flight = "1m"
 		} else {
 			msg.Flight = check.Takes
 		}
@@ -200,9 +192,10 @@ func (s *Spock) Worker(channel string, workers int) {
 						_, err := s.Lambda.Execute(lambda, strings.NewReader(""), args)
 						if err == nil {
 							// everything worked :thumbs_up:
-							s.Q.Delete(channel, msg.ID)
 						}
 					}
+					// remove the message regardless
+					s.Q.Delete(channel, msg.ID)
 				}
 			}
 		}()

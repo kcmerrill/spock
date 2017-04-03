@@ -1,0 +1,4 @@
+dev.box:
+    url: http://wp4.7.2-php5-dev.wild.dev.lijit.com/
+    params: status=200 contains=recent
+    notify: email slack
