@@ -32,6 +32,7 @@ func URL(stdin io.Reader, args string) (string, error) {
 			defer response.Body.Close()
 
 			fmt.Println("BLEH", response.StatusCode, status)
+
 			// check status code
 			if status != 0 && response.StatusCode != status {
 				return string(body), fmt.Errorf("Status code incorrect. Expected %d Actual %d", response.StatusCode, status)

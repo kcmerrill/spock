@@ -37,13 +37,13 @@ func TestChecks(t *testing.T) {
 
 		// verify notifications
 		if c.Notify != "email slack" {
-			t.Fatalf("Notifycation for kcmerrill.com should be email and slack")
+			t.Fatalf("Notification for kcmerrill.com should be email and slack")
 		}
 
 		// Verify the modules are being parsed properly
 		if url, modExists := c.Module["url"]; modExists {
-			if url != "kcmerrill.com" {
-				t.Fatalf("Unable to parse modules. In this case kcmerrill.com -> url: kcmerrill.com")
+			if url != "http://kcmerrill.com" {
+				t.Fatalf("Unable to parse modules. In this case kcmerrill.com -> url: http://kcmerrill.com")
 			}
 		} else {
 			t.Fatalf("kcmerrill.com -> url -> kcmerrill.com should exist!")
