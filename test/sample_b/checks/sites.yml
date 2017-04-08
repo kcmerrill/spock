@@ -1,4 +1,4 @@
 kcmerrill.com:
     url: http://kcmerrill.com
-    params: status=200 contains=digital
+    params: status=200 contains=digitall
     notify: email slack

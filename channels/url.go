@@ -31,16 +31,14 @@ func URL(stdin io.Reader, args string) (string, error) {
 			body, _ := ioutil.ReadAll(response.Body)
 			defer response.Body.Close()
 
-			fmt.Println("BLEH", response.StatusCode, status)
-
 			// check status code
 			if status != 0 && response.StatusCode != status {
-				return string(body), fmt.Errorf("Status code incorrect. Expected %d Actual %d", response.StatusCode, status)
+				return string(body), fmt.Errorf("Expected %d status code, Actual %d", response.StatusCode, status)
 			}
 
 			// check contains(search string)
 			if contains != "" && !strings.Contains(string(body), contains) {
-				return string(body), fmt.Errorf("Search string not found! Expected to find %s", contains)
+				return string(body), fmt.Errorf("Expected %s", contains)
 			}
 
 			// good to go!

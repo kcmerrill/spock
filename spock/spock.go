@@ -1,14 +1,15 @@
 package spock
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/kcmerrill/crush/crush"
 	"github.com/kcmerrill/genie/genie"
+	"github.com/kcmerrill/sherlock/sherlock"
 	"github.com/kcmerrill/spock/channels"
 	"github.com/robfig/cron"
 	log "github.com/sirupsen/logrus"
@@ -16,12 +17,13 @@ import (
 )
 
 // New instance of spock
-func New(dir string, Q *crush.Q, lambda *genie.Genie) *Spock {
+func New(dir string, lambda *genie.Genie) *Spock {
+	log.SetLevel(log.InfoLevel)
 	spock := &Spock{
-		Q:      Q,
 		Lambda: lambda,
 		Dir:    dir,
 		Cron:   cron.New(),
+		Track:  sherlock.New(),
 	}
 
 	log.SetLevel(log.DebugLevel)
@@ -51,7 +53,7 @@ func New(dir string, Q *crush.Q, lambda *genie.Genie) *Spock {
 
 // Spock Singleton to handle all of the inner workings of our app
 type Spock struct {
-	Q        *crush.Q               `yaml:"-"`
+	Track    *sherlock.Sherlock     `yaml:"-"`
 	Lambda   *genie.Genie           `yaml:"-"`
 	Dir      string                 `yaml:"-"`
 	Info     map[string]*Info       `yaml:"-"`
@@ -83,7 +85,9 @@ func (s *Spock) LoadChannels() string {
 func (s *Spock) LoadDefaults() {
 	// add our url check
 	s.Lambda.AddLambda(genie.NewCodeLambda("url", channels.URL))
-	s.Worker("url", 10)
+
+	// add slack integration
+	s.Lambda.AddLambda(genie.NewCodeLambda("slack", channels.Slack))
 }
 
 func (s *Spock) loader(file string) string {
@@ -136,66 +140,64 @@ func (s *Spock) Conn() {
 	for name, check := range s.Checks {
 		// cron is set ...
 		if check.Cron != "" {
-			s.Cron.AddFunc(check.Cron, func() { s.Producer(name, check) })
-			log.WithFields(log.Fields{"name": name, "cron": check.Cron}).Debug("Loaded")
+			s.Cron.AddFunc(check.Cron, func() { s.Runner(name, check) })
 		} else {
-			// come on man! give me something!
-			s.Cron.AddFunc("0 * * * * *", func() { s.Producer(name, check) })
-			log.WithFields(log.Fields{"name": name, "every": "default(1m)"}).Debug("Loaded")
+			// come on man! give me something! ok ok, every minute it is.
+			s.Cron.AddFunc("*/10 * * * * *", func() { s.Runner(name, check) })
 		}
 	}
 	s.Cron.Start()
 }
 
-// Producer takes a check and runs with it
-func (s *Spock) Producer(name string, check *Check) {
-	for topic := range check.GetMessages() {
-		// create a new message
-		msg := crush.NewMessage(topic, name, "")
-
-		// we will take care of attempts, notifications, etc later ...
-		msg.Attempts = 1
-
-		// How long does it take?
-		if check.Takes == "" {
-			msg.Flight = "1m"
-		} else {
-			msg.Flight = check.Takes
-		}
-
-		// setup our dead letter(aka our notification channels)
-		msg.DeadLetter = check.Notify
-
-		// send our message to the queue
-		s.Q.NewRawMessage(msg)
-	}
-}
-
-// Worker starts a lambda worker based on a channel
-func (s *Spock) Worker(channel string, workers int) {
-	for worker := 0; worker < workers; worker++ {
+// Runner takes a check and runs with it
+func (s *Spock) Runner(name string, check *Check) {
+	for module, args := range check.GetMessages() {
 		go func() {
-			for {
-				msg := s.Q.Message(channel)
-				if msg == nil {
-					// no need to hammer the system
-					<-time.After(1 * time.Second)
-					continue
-				}
-
-				// we have a message, lets process it
-				s.Locks["Checks"].Lock()
-				check, exists := s.Checks[msg.ID]
-				s.Locks["Checks"].Unlock()
-				if exists {
-					for lambda, args := range check.GetMessages() {
-						_, err := s.Lambda.Execute(lambda, strings.NewReader(""), args)
-						if err == nil {
-							// everything worked :thumbs_up:
-						}
+			e := s.Track.E(name + "." + module)
+			// might be multiple checks within a check. :shrug:
+			e.I("checked").Add(1)
+			// set the type
+			e.S("module").Set(module)
+			// set the name
+			e.S("name").Set(name)
+			// Reset the time it was last_checked to now()
+			e.D("last_checked").Reset()
+			// Update attempted
+			e.I("attempts").Add(1)
+			// take whatever we have currently in our entity and json encode it
+			j, _ := json.Marshal(e)
+			// Let execute it!
+			results, ok := s.Lambda.Execute(module, strings.NewReader(string(j)), args)
+			// noooice!
+			if ok == nil {
+				log.WithFields(log.Fields{"name": name, "module": module}).Info(string(j))
+				// lets track last success
+				e.D("last_success").Reset()
+				// reset the attempts
+				e.I("attempts").Reset()
+			} else {
+				log.WithFields(log.Fields{"name": name, "module": module, "check": "failed"}).Error(ok.Error())
+				// boo! something broke ....
+				e.D("last_failed").Reset()
+				e.S("output").Set(results)
+				e.S("error").Set(ok.Error())
+				attempts := e.I("attempts").Int()
+				if (check.Try == 0 && attempts == 1) || (check.Try == attempts) {
+					// we should do something, like notify!
+					e.D("last_notified").Reset()
+					for _, notify := range strings.Split(check.Notify, " ") {
+						j, _ := json.Marshal(e)
+						go func(notify, module string) {
+							// verify we have the appropriate channels
+							if channel, exists := s.Channels[notify]; exists {
+								// take whatever we have currently in our entity and json encode it
+								_, notifyE := s.Lambda.Execute(notify, strings.NewReader(string(j)), strings.Join(params(channel.Params), " "))
+								if notifyE != nil {
+									log.WithFields(log.Fields{"name": name, "module": notify}).Error(notifyE.Error())
+								}
+							}
+						}(notify, module)
 					}
-					// remove the message regardless
-					s.Q.Delete(channel, msg.ID)
 				}
 			}
 		}()

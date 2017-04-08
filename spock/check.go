@@ -9,7 +9,6 @@ type Check struct {
 	Module map[string]string `yaml:",inline"`
 	Cron   string            `yaml:"cron"`
 	Try    int               `yaml:"try"`
-	Takes  string            `yaml:"takes"`
 }
 
 // GetMessages will grab all the modules + arguments
