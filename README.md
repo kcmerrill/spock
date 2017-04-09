@@ -20,7 +20,7 @@ via docker:
 
 ## 4 minute(6 http checks) setup
 
-[![asciicast](https://asciinema.org/a/112261.png)](https://asciinema.org/a/112261)
+[![asciicast](https://asciinema.org/a/103711.png)](https://asciinema.org/a/112261)
 
 ## About
 
