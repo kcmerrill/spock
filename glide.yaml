@@ -1,0 +1,13 @@
+package: github.com/kcmerrill/spock
+import:
+- package: github.com/kcmerrill/genie
+  subpackages:
+  - genie
+- package: github.com/kcmerrill/sherlock
+  subpackages:
+  - sherlock
+- package: github.com/kcmerrill/shutdown.go
+- package: github.com/kcmerrill/slack-go-webhook
+- package: github.com/robfig/cron
+- package: github.com/sirupsen/logrus
+- package: gopkg.in/yaml.v2

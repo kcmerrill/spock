@@ -1,0 +1,3 @@
+slack:
+    params: --webhook=1234
+    template: Bingo was his nameo! {{ .Name }}. Seriously, {{ .Attempts }}? Busted!

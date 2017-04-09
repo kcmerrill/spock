@@ -3,30 +3,28 @@ package spock
 import (
 	"testing"
 
-	"github.com/kcmerrill/crush/crush"
 	"github.com/kcmerrill/genie/genie"
 )
 
 func TestChannels(t *testing.T) {
-	s := New("../test/sample_b/", crush.CreateQ(), genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_b/", genie.New("test/lambdas", "", ""))
 	if c, exists := s.Channels["slack"]; !exists {
 		t.Fatalf("Unable to parse channels 'slack'")
 	} else {
 		// the channel params should be set
-		if c.Params != "token=1234 channel=#general" {
+		if c.Params != "webhook=1234 channel=#general" {
 			t.Fatalf("Unable to parse params from the channels yaml file")
 		}
 	}
 }
 
 func TestChecks(t *testing.T) {
-	s := New("../test/sample_b/", crush.CreateQ(), genie.New("test/lambdas", "", ""))
-	/*
-			kcmerrill.com:
-		    url: kcmerrill.com
-		    params: status=200 contains=digital https=true
-		    notify: email slack
-	*/
+	s := New("../test/sample_b/", genie.New("test/lambdas", "", ""))
+
+	if _, exists := s.Checks["bad-kcmerrill.com"]; !exists {
+		t.Fatalf("Expecting the check 'bad-kcmerrill.com'")
+	}
+
 	if c, exists := s.Checks["kcmerrill.com"]; !exists {
 		t.Fatalf("Expecting the check 'kcmerrill.com'")
 	} else {
@@ -53,7 +51,7 @@ func TestChecks(t *testing.T) {
 
 func TestLoader(t *testing.T) {
 	// we are in the spock dir ... go up one
-	s := New("../test/sample_a/", crush.CreateQ(), genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""))
 	channels := s.LoadChannels()
 	if channels != "a\n\nb\n\n" {
 		t.Fatalf(channels)
@@ -63,5 +61,32 @@ func TestLoader(t *testing.T) {
 	checks := s.LoadChecks()
 	if checks != "checks\n\n" {
 		t.Fatalf("Faied to load sample_a/checks/checks.yml -> contains 'a'")
+	}
+}
+
+func TestGetChannel(t *testing.T) {
+	// we are in the spock dir ... go up one
+	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""))
+	channels := s.LoadChannels()
+	if channels != "a\n\nb\n\n" {
+		t.Fatalf(channels)
+	}
+
+	// test our checks
+	checks := s.LoadChecks()
+	if checks != "checks\n\n" {
+		t.Fatalf("Faied to load sample_a/checks/checks.yml -> contains 'a'")
+	}
+}
+
+// verify our defaults are loaded
+func TestLoadDefaults(t *testing.T) {
+	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""))
+	if _, exists := s.Lambda.Lambdas["slack"]; !exists {
+		t.Fatalf("Expecting the 'slack' lambda to be enabled by default")
+	}
+
+	if _, exists := s.Lambda.Lambdas["url"]; !exists {
+		t.Fatalf("Expecting the 'url' lambda to be enabled by default")
 	}
 }

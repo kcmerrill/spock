@@ -1,4 +1,18 @@
-dev.box:
-    url: http://wp4.7.2-php5-dev.wild.dev.lijit.com/
-    params: status=200 contains=recent
-    notify: email slack
+kcmerrill.com:
+    url: http://kcmerrill.com
+    notify: slack
+  
+yoda.kcmerrill.com:
+    url: https://yoda.kcmerrill.com
+    notify: slack
+
+crush.kcmerrill.com:
+    every: 5s
+    shell: |
+        echo "broke :(" && false
+        #wget -qO- https://crush.kcmerrill.com/test/something || (echo "Crush no longer accepting messages" && false)
+    notify: slack
+    
+go-dist.kcmerrill.com:
+    url: https://go-dist.kcmerrill.com/kcmerrill/alfred
+    notify: slack

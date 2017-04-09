@@ -1,4 +1,25 @@
-tdd:
+deploy*:
+  summary: Deploy Spock to the various places
+  tasks: git docker
+
+git:
+  summary: Commit/Push to git
+  command: |
+    git status
+    echo "Pushing these files. Ok? Ctrl+C to cancel"
+    read
+    git add .
+    git commit
+    git push origin master
+    
+    
+docker: 
+  summary: Build and push to docker
+  command: |
+    docker build -t kcmerrill/spock .
+    docker push kcmerrill/spock
+  
+tdd*:
   watch: ".*?go$"
   tasks: test
 

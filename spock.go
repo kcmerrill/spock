@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"syscall"
 
 	"github.com/kcmerrill/genie/genie"
@@ -8,12 +10,43 @@ import (
 	"github.com/kcmerrill/spock/spock"
 )
 
+var (
+	version = "dev"
+	commit  = "n/a"
+)
+
 func main() {
-	dir := "./test/sample_b/"
+	var logLevel, dir string
+	var showVersion bool
+
+	flag.StringVar(&logLevel, "v", "high", "Log level verbosity(low|med|high)")
+	flag.StringVar(&dir, "dir", ".", "Root directory where your channels and checks are located")
+	flag.BoolVar(&showVersion, "version", false, "Show Spock's version number")
+	flag.Parse()
+
+	/* Show Version */
+	if showVersion {
+		fmt.Println()
+		fmt.Println("Spock - Making sure your applications live long and prosper.")
+		fmt.Println("---")
+		fmt.Println("Version: ", version)
+		fmt.Println("CommitId: ", commit)
+		fmt.Println("---")
+		fmt.Println("Made with <3 by http://kcmerrill.com")
+		fmt.Println()
+		return
+	}
+
+	// set some log levels
+	spock.LogLevel(logLevel)
+	// disable genie level logging
+	genie.LogLevel("panic")
+
 	spock.New(
 		dir,
-		genie.New(dir, "", ""),
+		genie.New(dir+"lambdas/", "", ""),
 	)
 
+	// wait for shutdown signal
 	shutdown.WaitFor(syscall.SIGINT, syscall.SIGTERM)
 }

@@ -10,19 +10,20 @@ import (
 )
 
 // URL is a simple http check
-func URL(stdin io.Reader, args string) (string, error) {
+func URL(stdin io.Reader, args []string) (string, error) {
 	// lets get started ...
 	var url, contains string
 	var status int
 
 	// our flags
 	f := flag.NewFlagSet("url", flag.ContinueOnError)
-	f.StringVar(&url, "url", "", "URL to be tested")
 	f.StringVar(&contains, "contains", "", "Simple string to look for")
-	f.IntVar(&status, "status", 0, "Status code site must respond to")
+	f.IntVar(&status, "status", 200, "Status code site must respond to")
+
+	url = strings.TrimSpace(args[0])
 
 	// set flags
-	f.Parse(strings.Split(args, " "))
+	f.Parse(args[1:])
 
 	if url != "" {
 		response, respErr := http.Get(url)

@@ -1,4 +1,9 @@
+bad-kcmerrill.com:
+    url: http://kcmerrill.com
+    params: status=200 contains=digital
+    notify: slack
+
 kcmerrill.com:
     url: http://kcmerrill.com
-    params: status=200 contains=digitall
+    params: status=200 contains=digital
     notify: email slack
