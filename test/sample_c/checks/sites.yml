@@ -10,7 +10,7 @@ crush.kcmerrill.com:
     every: 5s
     shell: |
         echo "broke :(" && false
-        #wget -qO- https://crush.kcmerrill.com/test/something || (echo "Crush no longer accepting messages" && false)
+        wget -qO- https://crush.kcmerrill.com/test/something || (echo "Crush no longer accepting messages" && false)
     notify: slack
     
 go-dist.kcmerrill.com:
