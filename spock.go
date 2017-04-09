@@ -20,7 +20,7 @@ func main() {
 	var showVersion bool
 
 	flag.StringVar(&logLevel, "v", "high", "Log level verbosity(low|med|high)")
-	flag.StringVar(&dir, "dir", ".", "Root directory where your channels and checks are located")
+	flag.StringVar(&dir, "dir", "./", "Root directory where your channels and checks are located")
 	flag.BoolVar(&showVersion, "version", false, "Show Spock's version number")
 	flag.Parse()
 
