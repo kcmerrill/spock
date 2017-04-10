@@ -24,7 +24,7 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "Show Spock's version number")
 	flag.Parse()
 
-	/* Show Version */
+	// Show Version
 	if showVersion {
 		fmt.Println()
 		fmt.Println("Spock - Making sure your applications live long and prosper.")
