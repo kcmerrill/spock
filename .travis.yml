@@ -1,10 +1,6 @@
 language: go
 
 go:
-    - 1.6.2
-
-install:
-    - go get
-    - go install github.com/kcmerrill/alfred/
+    - 1.7.5
 
 script: go test spock/*
