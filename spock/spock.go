@@ -268,10 +268,16 @@ func (s *Spock) Runner(name string, check Check) {
 				log.WithFields(log.Fields{"name": name, "module": module, "#": e.I("checked").Int()}).Info("Check was succesful!")
 				// lets track last success
 				e.D("last_success").Reset()
+				// lets check for attempts right quick
+				if e.I("attempts").Int() > 1 {
+					// meaning, was bad, but is now good! Lets send it to a different channel
+
+				}
 				// reset the attempts
 				e.I("attempts").Reset()
 				// reset any notification stuff
 				e.B("should.notify").Set(false)
+				// Lets set the success here
 			} else {
 				log.WithFields(log.Fields{"name": name, "module": module, "attempts": e.I("attempts").Int()}).Error(strings.TrimSpace(results))
 				// boo! something broke ....
