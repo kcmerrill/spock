@@ -13,12 +13,14 @@ import (
 // Slack sends a messages as an incoming webhook to the slack api
 func Slack(stdin io.Reader, args []string) (string, error) {
 	// lets get started ...
-	var webhook, channel string
+	var webhook, channel, status, color string
 
 	// our flags
 	f := flag.NewFlagSet("slack", flag.ContinueOnError)
 	f.StringVar(&webhook, "webhook", "", "The integration endpoint")
 	f.StringVar(&channel, "channel", "", "The channel to be used")
+	f.StringVar(&status, "status", "Failed", "The text of the status type")
+	f.StringVar(&color, "color", "danger", "The color of the slack message. (good|warning|danger|#hex)")
 
 	// set flags
 	f.Parse(args)
@@ -28,15 +30,15 @@ func Slack(stdin io.Reader, args []string) (string, error) {
 		in, _ := ioutil.ReadAll(stdin)
 		cInfo := info.New(in)
 
-		text := "[" + cInfo.ID + "] failed"
+		text := "[" + cInfo.ID + "] " + status
 		if cInfo.Template != "" {
 			text = cInfo.Template
 		}
 
-		attachment := slack.Attachment{Color: "danger"}
+		attachment := slack.Attachment{Color: color}
 		attachment.
 			AddField(slack.Field{Title: "Check", Value: cInfo.ID}).
-			AddField(slack.Field{Title: "Error", Value: cInfo.Error})
+			AddField(slack.Field{Title: status, Value: cInfo.Error})
 		payload := slack.Payload{
 			Text:        text,
 			Attachments: []slack.Attachment{attachment},

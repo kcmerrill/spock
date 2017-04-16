@@ -34,15 +34,17 @@ func URL(stdin io.Reader, args []string) (string, error) {
 
 			// check status code
 			if status != 0 && response.StatusCode != status {
-				return string(body), fmt.Errorf("Expected %d status code, Actual %d", response.StatusCode, status)
+				errMsg := fmt.Errorf("Expected %d status code, %d returned", response.StatusCode, status)
+				return errMsg.Error(), errMsg
 			}
 
 			// check contains(search string)
 			if contains != "" && !strings.Contains(string(body), contains) {
-				return string(body), fmt.Errorf("Expected %s", contains)
+				errMsg := fmt.Errorf("Expected %s", contains)
+				return errMsg.Error(), errMsg
 			}
 
-			// good to go!
+			// good to go
 			return string(body), nil
 		}
 		// something happened :(

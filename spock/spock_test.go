@@ -34,8 +34,8 @@ func TestChecks(t *testing.T) {
 		}
 
 		// verify notifications
-		if c.Notify != "email slack" {
-			t.Fatalf("Notification for kcmerrill.com should be email and slack")
+		if c.Fails != "email slack" {
+			t.Fatalf("Failures for kcmerrill.com should be email and slack")
 		}
 
 		// Verify the modules are being parsed properly

@@ -1,7 +1,6 @@
 package spock
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -116,7 +115,6 @@ func (s *Spock) LoadChannels() string {
 				} else {
 					log.WithFields(log.Fields{"channel": name}).Error("Unable to find username/project/file for github")
 				}
-
 			case "code":
 				if channel.Command != "" {
 					l, err := genie.NewLocalLambda(name, s.Dir+"lambdas/", channel.Command, []byte(lambdaValue))
@@ -243,77 +241,6 @@ func (s *Spock) Conn() {
 		}
 	}
 	s.Cron.Start()
-}
-
-// Runner takes a check and runs with it
-func (s *Spock) Runner(name string, check Check) {
-	for module, args := range check.GetMessages() {
-		go func() {
-			e := s.Track.E(name)
-			// might be multiple checks within a check. :shrug:
-			e.I("checked").Add(1)
-			// set the module
-			e.S("module").Set(module)
-			// set the name
-			e.S("name").Set(name)
-			// Reset the time it was last_checked to now()
-			e.D("last_checked").Reset()
-			// Update attempted
-			e.I("attempts").Add(1)
-			j, _ := json.Marshal(e)
-			// Let execute it!
-			results, ok := s.Lambda.Execute(module, strings.NewReader(string(j)), strings.Split(args, " "))
-			// noooice!
-			if ok == nil {
-				log.WithFields(log.Fields{"name": name, "module": module, "#": e.I("checked").Int()}).Info("Check was succesful!")
-				// lets track last success
-				e.D("last_success").Reset()
-				// reset the attempts
-				e.I("attempts").Reset()
-				// reset any notification stuff
-				e.B("should.notify").Set(false)
-			} else {
-				log.WithFields(log.Fields{"name": name, "module": module, "attempts": e.I("attempts").Int()}).Error(strings.TrimSpace(results))
-				// boo! something broke ....
-				e.D("last_failed").Reset()
-				e.S("output").Set(results)
-				e.S("error").Set(results)
-				attempts := e.I("attempts").Int()
-				// if try == 0 then we need to alert. If try == attempts we need to alert. If the last alert failed to alert, we need ot alert
-				if (check.Try == 0 && attempts == 1) || (check.Try == attempts) || e.B("notification.error").Bool() {
-					// we should do something, like notify!
-					e.D("last_notified").Reset()
-					// reset all notification errors
-					e.B("notification.error").Set(false)
-					for _, notify := range strings.Split(check.Notify, " ") {
-						// giddy up!
-						go func(notify, module string) {
-							// verify we have the appropriate channels
-							if channel, exists := s.GetChannel(notify); exists {
-								// set our template to be passed along
-								e.S("template").Set(channel.Template)
-								// json encode our entity, so we can then use it later on for templating stuff
-								j, _ := json.Marshal(e)
-								// take whatever we have currently in our entity and json encode it
-								notifyResults, notifyE := s.Lambda.Execute(notify, strings.NewReader(string(j)), strings.Split(channel.Params, " "))
-								if notifyE != nil {
-									log.WithFields(log.Fields{"name": name, "module": notify, "notification": "error"}).Error(notifyE.Error())
-									// try again next check(if it fails)
-									e.B("notification.error").Set(true)
-								} else {
-									log.WithFields(log.Fields{"name": name, "module": notify, "notification": "succesful"}).Info(notifyResults)
-								}
-							} else {
-								log.WithFields(log.Fields{"name": name, "module": notify, "notification": "error"}).Error("Channel '" + notify + "' does not exist")
-								// try again next check(if it fails)
-								e.B("notification.error").Set(true)
-							}
-						}(notify, module)
-					}
-				}
-			}
-		}()
-	}
 }
 
 // GetChannel returns the channel and if it doens't, an error.
