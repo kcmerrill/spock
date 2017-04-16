@@ -34,7 +34,7 @@ func URL(stdin io.Reader, args []string) (string, error) {
 
 			// check status code
 			if status != 0 && response.StatusCode != status {
-				errMsg := fmt.Errorf("Expected %d status code, %d returned", response.StatusCode, status)
+				errMsg := fmt.Errorf("Expected %d status code, %d returned", status, response.StatusCode)
 				return errMsg.Error(), errMsg
 			}
 
