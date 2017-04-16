@@ -43,22 +43,22 @@ kcmerrill.com:
     params: --status 200 --contains digital
     every: 10s
     try: 3
-    notify: slack 
+    fails: slack 
 
 go-dist.kcmerrill.com:
     url: http://go-dist.kcmerrill.com/kcmerrill/spock
-    notify: slack
+    fails: slack
 
 crush.kcmerrill.com:
     cron: "*/30 * * * * *"
     shell: |
         wget -qO- https://crush.kcmerrill.com/test/something || (echo "Crush no longer accepting messages" && false)
-    notify: slack
+    fails: slack
    
 tmp.dir.exists:
     every: 1h
     dir.exists: /tmp
-    notify: slack
+    fails: slack
 ```
 
 * **cron** is simply the same cron syntax you're used of. You can [read more about it here](https://godoc.org/github.com/robfig/cron). 
@@ -71,7 +71,7 @@ tmp.dir.exists:
 
 * **try** indicates the number of attempts `spock` should try and fail before notifying. Sometimes network connections can be finicky, scripts or whatever. By default, without `try` it will automatically alert upon it's first failure. 
 
-* **notify** is a space separated string that describes the `channels` to send the check to. Currently, only `slack` is built in, but you can easily add `email`, `logging` or whatever suits your needs.
+* **fails** is a space separated string that describes the `channels` to send the check to. Currently, only `slack` is built in, but you can easily add `email`, `logging` or whatever suits your needs.
 
 * **dir.exists** is a custom channel that _does not_ exist ... yet. Lets take a peek at `channels` now and we'll walk through how to create the `dir.exists` channel. Contrived example to be sure, as you could've just done `shell: ls /tmp` but that's neither here nor there.
 
