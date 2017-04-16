@@ -11,8 +11,10 @@ import (
 )
 
 var (
-	version = "dev"
-	commit  = "n/a"
+	// Version will be set at runtime(the current version of spock)
+	Version = "dev"
+	// Commit will be set at runtime(the current commit id of spock)
+	Commit = "n/a"
 )
 
 func main() {
@@ -29,8 +31,8 @@ func main() {
 		fmt.Println()
 		fmt.Println("Spock - Making sure your applications live long and prosper.")
 		fmt.Println("---")
-		fmt.Println("Version: ", version)
-		fmt.Println("CommitId: ", commit)
+		fmt.Println("Version: ", Version)
+		fmt.Println("CommitId: ", Commit)
 		fmt.Println("---")
 		fmt.Println("Made with <3 by http://kcmerrill.com")
 		fmt.Println()
