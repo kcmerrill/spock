@@ -19,8 +19,8 @@ func Slack(stdin io.Reader, args []string) (string, error) {
 	f := flag.NewFlagSet("slack", flag.ContinueOnError)
 	f.StringVar(&webhook, "webhook", "", "The integration endpoint")
 	f.StringVar(&channel, "channel", "", "The channel to be used")
-	f.StringVar(&status, "status", "Failure", "The text of the status type")
-	f.StringVar(&color, "color", "danger", "The color of the slack message(good|warning|danger)")
+	f.StringVar(&status, "status", "Failed", "The text of the status type")
+	f.StringVar(&color, "color", "danger", "The color of the slack message. (good|warning|danger|#hex)")
 
 	// set flags
 	f.Parse(args)
