@@ -1,6 +1,7 @@
 package sherlock
 
 import (
+	"encoding/json"
 	"sync"
 	"time"
 )
@@ -10,13 +11,21 @@ type Entity struct {
 	ID         string `json:"id"`
 	lock       *sync.Mutex
 	Properties map[string]Property `json:"properties"`
-	Events     []string            `json:"events"`
+	Events     []*Event            `json:"events"`
 }
 
 // Event object tracks a specific event
 type Event struct {
 	Created     time.Time `json:"created"`
 	Description string    `json:"description"`
+}
+
+// NewEvent creates a new event
+func NewEvent(msg string) *Event {
+	return &Event{
+		Created:     time.Now(),
+		Description: msg,
+	}
 }
 
 // Property will return an entities property
@@ -29,11 +38,18 @@ func (e *Entity) Property(name string) Property {
 }
 
 // Event will create a new event for an entitiy
-func (e *Entity) Event(event string) {
+func (e *Entity) Event(msg string) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
+	event := NewEvent(msg)
+
 	e.Events = append(e.Events, event)
+
+	// only hold on to 50 or so ...
+	if len(e.Events) > 50 {
+		e.Events = e.Events[1:len(e.Events)]
+	}
 }
 
 // I will create a new int property if it doesn't exist
@@ -89,6 +105,11 @@ func (e *Entity) NewProperty(name, param string) Property {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
+	// see if it already exists
+	if _, exists := e.Properties[name]; exists {
+		return e.Properties[name]
+	}
+
 	var p Property
 	switch param {
 	case "int":
@@ -109,10 +130,27 @@ func (e *Entity) NewProperty(name, param string) Property {
 	return e.Properties[name]
 }
 
+// Has deterines if an entity has a property or not
+func (e *Entity) Has(property string) bool {
+	e.lock.Lock()
+	defer e.lock.Unlock()
+	_, exists := e.Properties[property]
+	return exists
+}
+
 // Created returns the entity creation date(aka the _created param)
 func (e *Entity) Created() time.Time {
 	created := e.Property("_created").Int()
 	return time.Unix(int64(created), 0)
+}
+
+// String returns the entity as a string
+func (e *Entity) String() (string, error) {
+	j, err := json.Marshal(e)
+	if err == nil {
+		return string(j), err
+	}
+	return "", err
 }
 
 // Property can be multiple things ...
@@ -127,6 +165,7 @@ type Property interface {
 	Bool() bool
 	LastModified() time.Time
 	Created() time.Time
+	Type() string
 }
 
 // Sherlock struct
@@ -166,7 +205,7 @@ func NewEntity(id string) *Entity {
 	e := &Entity{ID: id}
 	e.Properties = make(map[string]Property)
 	e.lock = &sync.Mutex{}
-	e.Events = make([]string, 0)
+	e.Events = make([]*Event, 0)
 	e.NewProperty("_created", "date").Set(time.Now())
 	return e
 }

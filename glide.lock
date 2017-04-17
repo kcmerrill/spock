@@ -1,5 +1,5 @@
 hash: 0d050bee749426e7c83f98c4e4711225a7a312acbc0084be7363da2d65d3755b
-updated: 2017-04-09T20:08:03.875955191-06:00
+updated: 2017-04-16T22:55:53.114825455-06:00
 imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
@@ -10,7 +10,7 @@ imports:
   subpackages:
   - genie
 - name: github.com/kcmerrill/sherlock
-  version: 3b6a4b1364776dd0f7460b70d472aee34175d630
+  version: bd6c1f2afb968a4ce27539ae6949fe55279eb008
   subpackages:
   - sherlock
 - name: github.com/kcmerrill/shutdown.go
@@ -20,7 +20,7 @@ imports:
 - name: github.com/moul/http2curl
   version: 4e24498b31dba4683efb9d35c1c8a91e2eda28c8
 - name: github.com/parnurzeal/gorequest
-  version: ea779001e09326d30d455dbf37bc0d08c49941a2
+  version: 96c7975f7b7ec63d931b38b2296ee78d92753683
 - name: github.com/pkg/errors
   version: ff09b135c25aae272398c51a07235b90a75aa4f0
 - name: github.com/robfig/cron
@@ -28,13 +28,13 @@ imports:
 - name: github.com/sirupsen/logrus
   version: 10f801ebc38b33738c9d17d50860f484a0988ff5
 - name: golang.org/x/net
-  version: d1e1b351919c6738fdeb9893d5c998b161464f0c
+  version: 61557ac0112b576429a0df080e1c2cef5dfbb642
   subpackages:
   - publicsuffix
 - name: golang.org/x/sys
-  version: f3918c30c5c2cb527c0b071a27c35120a6c0719a
+  version: aaabbdc969c3935a2a7f61efac801e7163c73a2a
   subpackages:
   - unix
 - name: gopkg.in/yaml.v2
-  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
+  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 testImports: []

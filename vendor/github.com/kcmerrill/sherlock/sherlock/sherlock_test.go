@@ -35,7 +35,7 @@ func TestSherlockEntity(t *testing.T) {
 	e.Event("clicked on button 'A'")
 	e.Event("clicked on button 'B'")
 
-	if e.Events[0] != "clicked on button 'A'" {
+	if e.Events[0].Description != "clicked on button 'A'" {
 		t.Fatalf("Was Expecting button a to be clicked!")
 	}
 }
@@ -70,5 +70,19 @@ func TestShortValueCreators(t *testing.T) {
 	empty := s.E("bingowas").S("his").String()
 	if empty != "" {
 		t.Fatalf("Expected '', Actual '%s'", empty)
+	}
+}
+
+func TestEntityHas(t *testing.T) {
+	s := New()
+	s.E("kcmerrill@gmail.com")
+	if s.E("kcmerrill@gmail.com").Has("username") {
+		t.Fatalf("We didn't set an email on this entity ... should not exist")
+	}
+
+	s.E("kcmerrill@gmail.com").S("username").Set("kcmerrill")
+
+	if !s.E("kcmerrill@gmail.com").Has("username") {
+		t.Fatalf("username should now be set on this entity")
 	}
 }

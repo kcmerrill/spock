@@ -18,11 +18,13 @@ var (
 )
 
 func main() {
-	var logLevel, dir string
+	var logLevel, dir, udp, web string
 	var showVersion bool
 
 	flag.StringVar(&logLevel, "v", "high", "Log level verbosity(low|med|high)")
 	flag.StringVar(&dir, "dir", "./", "Root directory where your channels and checks are located")
+	flag.StringVar(&udp, "udp-port", "8081", "UDP port for incoming stats")
+	flag.StringVar(&web, "web-port", "80", "HTTP port for incoming stats")
 	flag.BoolVar(&showVersion, "version", false, "Show Spock's version number")
 	flag.Parse()
 
@@ -44,10 +46,14 @@ func main() {
 	// disable genie level logging
 	genie.LogLevel("panic")
 
-	spock.New(
+	s := spock.New(
 		dir,
 		genie.New(dir+"lambdas/", "", ""),
 	)
+
+	// start the tracking servers
+	go s.Track.UDP(udp)
+	go s.Track.Web(web)
 
 	// wait for shutdown signal
 	shutdown.WaitFor(syscall.SIGINT, syscall.SIGTERM)
