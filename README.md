@@ -59,13 +59,18 @@ tmp.dir.exists:
     every: 1h
     dir.exists: /tmp
     fails: slack
+
+my.task:
+    every: 10s
+    heartbeat: 1h
+    fails: slack 
 ```
 
 * **cron** is simply the same cron syntax you're used of. You can [read more about it here](https://godoc.org/github.com/robfig/cron). 
 
 * **every** can be a golang `time.Duration` or special strings such as `@hourly`, `@daily`, `@midnight`. You can [read more about it here](https://godoc.org/github.com/robfig/cron).
 
-* **shell**, **url** are custom `channels`. This can be anything you'd like so long as it has a corrisponding `channel`. `spock` has a few custom `channels` built in. `slack`, `shell`, `url`. We can add more, we can also add public github repofiles as channels too! 
+* **shell**, **url**, **heartbeat** are custom `channels`. This can be anything you'd like so long as it has a corrisponding `channel`. `spock` has a few custom `channels` built in. `slack`, `shell`, `url`, `heartbeat`. We can add more, we can also add public github repofiles as channels too! 
 
 * **params** is a string of parameters to send to your `channel`. So in this case, imagine you had an application in your `$PATH` called `url`(Don't worry if you don't, `url` is built into `spock`). What would be executed is `$ url http://kcmerrill.com --status 200 --contains digital`. By default, the `url` check looks for status code `200`. It only checks if the page `contains` a certain word if you supply it. So even though the page might be running, if it doesn't contain the word `digital` the check will fail.
 
