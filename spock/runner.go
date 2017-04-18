@@ -41,7 +41,14 @@ func (s *Spock) Runner(name string, check Check) {
 				// reset any notification stuff
 				e.B("should.notify").Set(false)
 			} else {
-				log.WithFields(log.Fields{"name": name, "module": module, "attempts": e.I("attempts").Int()}).Error(strings.TrimSpace(results))
+				if strings.TrimSpace(results) != "" {
+					// first try the lambda results ...
+					log.WithFields(log.Fields{"name": name, "module": module, "attempts": e.I("attempts").Int()}).Error(strings.TrimSpace(results))
+				} else {
+					// perhaps the lambda doesn't exist? Or something broke with genie?
+					log.WithFields(log.Fields{"name": name, "module": module, "attempts": e.I("attempts").Int()}).Error(ok.Error())
+				}
+
 				// boo! something broke ....
 				e.D("last_failed").Reset()
 				e.S("output").Set(results)

@@ -153,6 +153,9 @@ func (s *Spock) LoadDefaults() {
 	s.Lambda.AddLambda(genie.NewCustomLambda("cmd", ""))
 	s.Lambda.AddLambda(genie.NewCustomLambda("cli", ""))
 	// ^^^ ha! genius if I do say so myself ... allows for custom cli/shell commands!
+
+	// add heartbeats
+	s.Lambda.AddLambda(genie.NewCodeLambda("heartbeat", channels.Heartbeat))
 }
 
 func (s *Spock) loader(file string) string {

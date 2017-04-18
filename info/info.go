@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"html/template"
+	"time"
 )
 
 // New returns information passed along via our check
@@ -24,13 +25,15 @@ type Info struct {
 	Output     string
 	Name       string
 	Template   string
+	Heartbeat  time.Time
 	Properties struct {
-		Attempts struct{ Value int }
-		Module   struct{ Value string }
-		Error    struct{ Value string }
-		Output   struct{ Value string }
-		Name     struct{ Value string }
-		Template struct{ Value string }
+		Attempts  struct{ Value int }
+		Module    struct{ Value string }
+		Error     struct{ Value string }
+		Output    struct{ Value string }
+		Name      struct{ Value string }
+		Template  struct{ Value string }
+		Heartbeat struct{ Modified time.Time }
 	}
 }
 
@@ -42,6 +45,7 @@ func (i *Info) Clean() {
 	i.Output = i.Properties.Output.Value
 	i.Name = i.Properties.Name.Value
 	i.Template = i.Properties.Template.Value
+	i.Heartbeat = i.Properties.Heartbeat.Modified
 }
 
 // CreateTemplate takes in the template param and tries to create a template off it.
