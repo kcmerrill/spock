@@ -28,7 +28,7 @@ func (s *Spock) Runner(name string, check Check) {
 			results, ok := s.Lambda.Execute(module, strings.NewReader(string(j)), strings.Split(args, " "))
 			// noooice!
 			if ok == nil {
-				log.WithFields(log.Fields{"name": name, "module": module, "#": e.I("checked").Int()}).Info("Check was succesful!")
+				log.WithFields(log.Fields{"name": name, "module": module, "#": e.I("checked").Int()}).Info("Check was successful!")
 				// lets track last success
 				e.D("last_success").Reset()
 				// lets check for attempts right quick
