@@ -31,6 +31,8 @@ func (s *Spock) Runner(name string, check Check) {
 				log.WithFields(log.Fields{"name": name, "module": module, "#": e.I("checked").Int()}).Info("Check was successful!")
 				// lets track last success
 				e.D("last_success").Reset()
+				// set the success/failure
+				e.B("status").Set(true)
 				// lets check for attempts right quick
 				if e.I("attempts").Int() > 1 {
 					// meaning, was bad, but is now good! Lets send it to a different channel
@@ -41,6 +43,8 @@ func (s *Spock) Runner(name string, check Check) {
 				// reset any notification stuff
 				e.B("should.notify").Set(false)
 			} else {
+				// set the success/failure
+				e.B("status").Set(false)
 				if strings.TrimSpace(results) != "" {
 					// first try the lambda results ...
 					log.WithFields(log.Fields{"name": name, "module": module, "attempts": e.I("attempts").Int()}).Error(strings.TrimSpace(results))
