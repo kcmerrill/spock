@@ -1,0 +1,98 @@
+text:focus {outline:0;}
+
+body {
+    background-color: white;
+    color: black;
+    margin: 0px;
+    padding:0px;
+    width: 100%;
+}
+.custom-font {
+    font-family: 'Mukta Vaani', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+}
+.spock-img {
+    height: 100%;
+    display: inline-block;
+    float:left;
+}
+.footer {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    background-color: black;
+    position:absolute;
+    bottom: 0;
+}
+.social-icons {
+    float: right;
+    margin-right: 20px;
+    font-size: 20px;
+}
+.social-icons i {
+    padding-right: 10px;
+}
+.fail {
+    color: red;
+}
+.ok {
+    color: green;
+}
+.
+.twitter {
+    color: #00aced;
+}
+.github {
+    color: white;
+}
+.facebook {
+    color: #3b5998;
+}
+.linkedin {
+    color: #0077b5;
+}
+
+.side {
+    height: 100%;
+    display: inline-block;
+    background-color:pink;
+    float: left;
+}
+
+.spock {
+    height: 100%;
+}
+
+.page {
+    height: 100%;
+    width: 100%;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.content {
+    padding: 20px;
+}
+
+.search-box{
+  width: 300px;
+  vertical-align: middle;
+  white-space: nowrap;
+  position: relative;
+}
+
+.search-box input#search{
+  width: 500px;
+  height: 50px;
+  background: black;
+  border: none;
+  font-size: 15pt;
+  color: white;
+  padding-left: 45px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
