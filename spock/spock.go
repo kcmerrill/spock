@@ -224,23 +224,30 @@ func (s *Spock) Conn() {
 	s.Locks["Checks"].Lock()
 	defer s.Locks["Checks"].Unlock()
 	for name, check := range s.Checks {
+		// collect some stats
+		e := s.Track.E(name)
+
 		// if every is set
 		if check.Every != "" {
 			if strings.HasPrefix(check.Every, "@") {
 				s.Cron.AddJob(check.Every, &job{s: s, name: name})
+				e.S("interval").Set(check.Every)
 			} else {
 				s.Cron.AddJob("@every "+check.Every, &job{s: s, name: name})
+				e.S("interval").Set("every " + check.Every)
 			}
 		}
 
 		// cron is set ...
 		if check.Cron != "" {
 			s.Cron.AddJob(check.Cron, &job{s: s, name: name})
+			e.S("interval").Set(check.Cron)
 		}
 
 		if check.Cron == "" && check.Every == "" {
 			// you leave me no choice. Every thirty seconds it is! (todo: we _should_ pass this in as an arg)
 			s.Cron.AddJob("*/30 * * * * *", &job{s: s, name: name})
+			e.S("interval").Set("*/30 * * * * *")
 		}
 	}
 	s.Cron.Start()

@@ -1,5 +1,5 @@
 hash: 0d050bee749426e7c83f98c4e4711225a7a312acbc0084be7363da2d65d3755b
-updated: 2017-04-16T22:55:53.114825455-06:00
+updated: 2017-04-23T16:58:53.875437563-06:00
 imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
@@ -10,7 +10,7 @@ imports:
   subpackages:
   - genie
 - name: github.com/kcmerrill/sherlock
-  version: bd6c1f2afb968a4ce27539ae6949fe55279eb008
+  version: 544fcb10d2e96e2be27f161343b1f150010ff9e3
   subpackages:
   - sherlock
 - name: github.com/kcmerrill/shutdown.go
@@ -20,7 +20,7 @@ imports:
 - name: github.com/moul/http2curl
   version: 4e24498b31dba4683efb9d35c1c8a91e2eda28c8
 - name: github.com/parnurzeal/gorequest
-  version: 96c7975f7b7ec63d931b38b2296ee78d92753683
+  version: 5ba0c8579b72c0577d482e07d3d0f01731641ca7
 - name: github.com/pkg/errors
   version: ff09b135c25aae272398c51a07235b90a75aa4f0
 - name: github.com/robfig/cron

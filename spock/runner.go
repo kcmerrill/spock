@@ -42,6 +42,8 @@ func (s *Spock) Runner(name string, check Check) {
 				e.I("attempts").Reset()
 				// reset any notification stuff
 				e.B("should.notify").Set(false)
+				// create an event
+				e.Event("checked:ok")
 			} else {
 				// set the success/failure
 				e.B("status").Set(false)
@@ -62,6 +64,7 @@ func (s *Spock) Runner(name string, check Check) {
 				if (check.Try == 0 && attempts == 1) || (check.Try == attempts) || e.B("notification.error").Bool() {
 					s.Send("notify.failure", check.Fails, e)
 				}
+				e.Event("checked:failed")
 			}
 		}()
 	}

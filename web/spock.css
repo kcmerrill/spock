@@ -25,6 +25,10 @@ body {
     font-size: 10px;
     float:left;
 }
+.footer a {
+    text-decoration: none;
+    color: darkgrey;
+}
 .social-icons {
     float: right;
     font-size: 25px;

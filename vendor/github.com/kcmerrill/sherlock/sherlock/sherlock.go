@@ -46,7 +46,7 @@ func (e *Entity) Event(msg string) {
 
 	e.Events = append(e.Events, event)
 
-	// only hold on to 50 or so ...
+	// TODO: Make this value customizable
 	if len(e.Events) > 50 {
 		e.Events = e.Events[1:len(e.Events)]
 	}
