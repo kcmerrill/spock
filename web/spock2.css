@@ -53,9 +53,10 @@ body {
     background-color:blue;
     float: left;
 }
-.check {
-    line-height:0px;
-    margin-bottom: 10px;
+.content .check {
+    width: 100%;
+    box-sizing: border-box;
+    clear: both;
 }
 
 .check .name {

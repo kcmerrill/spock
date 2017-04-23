@@ -6,38 +6,45 @@ body {
     margin: 0px;
     padding:0px;
     width: 100%;
+    box-sizing: border-box;
 }
 .custom-font {
     font-family: 'Mukta Vaani', sans-serif;
     font-family: 'Open Sans', sans-serif;
-}
-.spock-img {
-    height: 100%;
-    display: inline-block;
-    float:left;
 }
 .footer {
     width: 100%;
     padding: 10px;
     color: white;
     background-color: black;
-    position:absolute;
+    position:fixed;
     bottom: 0;
+    box-sizing: border-box;
+}
+.footer .credits {
+    font-size: 10px;
+    float:left;
 }
 .social-icons {
     float: right;
-    margin-right: 20px;
-    font-size: 20px;
+    font-size: 25px;
 }
 .social-icons i {
     padding-right: 10px;
 }
 .fail {
-    color: red;
+    color: #EC3B2D;
+}
+.fail-bg {
+    background-color: #EC3B2D;
 }
 .ok {
-    color: green;
+    color: #4AC53C;
 }
+.ok-bg {
+    background-color: #4AC53C;
+}
+.
 .
 .twitter {
     color: #00aced;
@@ -53,46 +60,90 @@ body {
 }
 
 .side {
+    width: 50%;
     height: 100%;
     display: inline-block;
-    background-color:pink;
     float: left;
 }
 
 .spock {
-    height: 100%;
+    width: 100%;
 }
 
 .page {
     height: 100%;
     width: 100%;
 }
-
-.title {
+.check {
+    padding-bottom: 45px;
+}
+.check .title {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 40px;
+    display: inline;
 }
 
 .content {
+    width: 100px;
+    float:right;
+    width: 50%;
+    box-sizing: border-box;
+    padding-bottom: 80px;
+}
+.side {
+    position: fixed;
+}
+.side .status {
+    width: 100%;
     padding: 20px;
+    font-size: 30px;
+    font-weight: bolder;
+    color: white;
+    text-align: center;
+    box-sizing: border-box;
+    display: none;
 }
 
-.search-box{
-  width: 300px;
-  vertical-align: middle;
-  white-space: nowrap;
-  position: relative;
+.content .status {
+    width: 100%;
+    padding: 20px;
+    font-size: 30px;
+    font-weight: bolder;
+    color: white;
+    box-sizing: border-box;
 }
 
-.search-box input#search{
-  width: 500px;
-  height: 50px;
-  background: black;
-  border: none;
-  font-size: 15pt;
-  color: white;
-  padding-left: 45px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+.check .type {
+    padding: 5px;;
+    display: inline;
+    color: white;
+    font-weight: bolder;
+    float:left;
+    margin: 13px 10px 10px 0px; 
+}
+
+.check .graph {
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    margin: 2px 2px 2px 2px;
+}
+
+.check .stats .info {
+    font-size: 12px;
+    color: darkslategrey;
+    color: lightgrey;
+}
+
+.check .histogram {
+    margin-top: 10px;
+}
+
+.check .stats .del {
+    color: darkgrey;
+}
+
+.content .top a{
+    text-decoration: none;
+    color: darkgrey;
 }
