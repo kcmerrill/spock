@@ -28,7 +28,10 @@ new Vue({
             app.checks = []
             fetch(app.endpoint + "/_all")
             .then(function (response) { return response.json() })
-            .then(function (checks) { app.checks = _.values(checks) })
+            .then(function (checks) { 
+                app.checks = _.values(checks) 
+                setTimeout(app.fetchChecks, 60000)
+            })
             .catch(function () { 
                 app.endpoint = prompt("Spock Endpoint", "http://localhost:8080")
                 app.fetchChecks()
