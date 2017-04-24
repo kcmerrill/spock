@@ -24,7 +24,7 @@ func main() {
 	flag.StringVar(&logLevel, "v", "high", "Log level (low|med|high)")
 	flag.StringVar(&dir, "dir", "./", "Root directory where your channels and checks are located")
 	flag.StringVar(&udp, "stats-udp-port", "8081", "UDP port for incoming stats")
-	flag.StringVar(&web, "stats-web-port", "8080", "HTTP port for incoming stats")
+	flag.StringVar(&web, "stats-web-port", "80", "HTTP port for incoming stats")
 	flag.StringVar(&auth, "auth", "", "Auth token. No auth if left blank")
 	flag.BoolVar(&showVersion, "version", false, "Show Spock's version number")
 	flag.Parse()
