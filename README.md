@@ -22,6 +22,7 @@ via docker:
 You can see the status of your checks via the [spock gui](https://spock.kcmerrill.com).
 [![gui](assets/gui.png)](https://spock.kcmerrill.com)
 
+It's just a simple single page application. Your standard webserver should be able to serve the files from the `gui` directory just fine. Or, you can use docker by running `docker run -d --restart always --name spock -P kcmerrill/spock-gui`
 
 ## 4 minute(6 http checks) setup
 
