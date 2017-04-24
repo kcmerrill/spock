@@ -34,16 +34,16 @@ func (s *Spock) Runner(name string, check Check) {
 				// set the success/failure
 				e.B("status").Set(true)
 				// lets check for attempts right quick
-				if e.I("attempts").Int() > 1 {
+				if e.B("notified").Bool() {
 					// meaning, was bad, but is now good! Lets send it to a different channel
 					s.Send("notify.recovery", check.Recovers, e)
 				}
 				// reset the attempts
 				e.I("attempts").Reset()
-				// reset any notification stuff
-				e.B("should.notify").Set(false)
 				// create an event
 				e.Event("checked:ok")
+				// reset notified
+				e.B("notified").Reset()
 			} else {
 				// set the success/failure
 				e.B("status").Set(false)
@@ -62,6 +62,7 @@ func (s *Spock) Runner(name string, check Check) {
 				attempts := e.I("attempts").Int()
 				// if try == 0 then we need to alert. If try == attempts we need to alert. If the last alert failed to alert, we need ot alert
 				if (check.Try == 0 && attempts == 1) || (check.Try == attempts) || e.B("notification.error").Bool() {
+					e.B("notified").Set(true)
 					s.Send("notify.failure", check.Fails, e)
 				}
 				e.Event("checked:failed")
