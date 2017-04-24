@@ -18,6 +18,11 @@ via docker:
 
 `$ docker run -ti -v $PWD/dir/to/root/channels/and/checks:/spock kcmerrill/spock`
 
+## GUI
+You can see the status of your checks via the [spock gui](https://spock.kcmerrill.com).
+[![gui](assets/gui.png)](https://spock.kcmerrill.com)
+
+
 ## 4 minute(6 http checks) setup
 
 [![asciicast](assets/screenshot.png)](https://asciinema.org/a/112261)

@@ -64,10 +64,11 @@ body {
 }
 
 .side {
-    width: 50%;
+    width: 40%;
     height: 100%;
     display: inline-block;
     float: left;
+    position: fixed;
 }
 
 .spock {
@@ -88,14 +89,10 @@ body {
 }
 
 .content {
-    width: 100px;
     float:right;
     width: 50%;
     box-sizing: border-box;
-    padding-bottom: 80px;
-}
-.side {
-    position: fixed;
+    padding: 0px 10px 80px 0px;
 }
 .side .status {
     width: 100%;
@@ -127,8 +124,8 @@ body {
 }
 
 .check .graph {
-    height: 25px;
-    width: 25px;
+    height: 21px;
+    width: 21px;
     display: inline-block;
     margin: 2px 2px 2px 2px;
 }
