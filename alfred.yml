@@ -1,6 +1,6 @@
 deploy*:
   summary: Deploy Spock to the various places
-  tasks: git docker
+  tasks: git docker docker-gui
 
 git:
   summary: Commit/Push to git
@@ -19,6 +19,13 @@ docker:
     docker build -t kcmerrill/spock .
     docker push kcmerrill/spock
   
+docker-gui: 
+  summary: Build and push to docker(gui)
+  dir: gui
+  command: |
+    docker build -t kcmerrill/spock-gui .
+    docker push kcmerrill/spock-gui
+ 
 tdd*:
   watch: ".*?go$"
   tasks: test
