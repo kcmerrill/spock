@@ -132,7 +132,6 @@ body {
 
 .check .stats .info {
     font-size: 12px;
-    color: darkslategrey;
     color: lightgrey;
 }
 
@@ -147,4 +146,32 @@ body {
 .content .top a{
     text-decoration: none;
     color: darkgrey;
+}
+
+.content .toolbar {
+    padding: 10px;
+    text-align: right;
+    font-size: 12px;
+    color: lightgrey;
+}
+
+.content .toolbar select {
+    margin: 0px 10px 0px 10px;
+}
+
+.content .toolbar .refresh {
+    cursor:pointer;
+}
+
+.content .toolbar .refresh:hover {
+    color: darkslategray;
+}
+
+.content .toolbar .endpoint {
+    cursor:pointer;
+}
+
+.content .toolbar .endpoint:hover {
+    color:darkslategray;
+    text-decoration: underline;
 }

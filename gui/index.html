@@ -15,6 +15,18 @@
             <img class="spock" src="imgs/mrspock.jpg">
         </div>
         <div class="content" id="spock">
+            <div class="toolbar">
+                <span class="endpoint" v-on:click="updateEndpoint">{{ endpoint }}</span>
+                <select v-model="every" v-on:change="refreshEndpoint">
+                    <option value="1000">1s</option>
+                    <option value="10000">10s</option>
+                    <option value="15000">15s</option>
+                    <option value="30000">30s</option>
+                    <option value="60000">1m</option>
+                </select>
+                <i class="refresh fa fa-refresh" aria-hidden="true" v-on:click="refreshEndpoint"></i>
+           </div>
+
             <div class="check" v-if="checks.length >= 1" v-for="check in checks">
                 <div class="title">{{ check.id }}</div><div class="type" v-bind:class="bg(check, 'properties.status.value')" >{{ property(check, "properties.module.value") }}</div>
                 <div style="clear:both"></div>

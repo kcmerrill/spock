@@ -1,7 +1,9 @@
 new Vue({
     el: "#spock",
     data: {
-        endpoint: "",
+        timeout: null, 
+        every: "1000",
+        endpoint: "http://localhost:8080",
         checks: []
     },
     created: function() {
@@ -23,6 +25,21 @@ new Vue({
         property: function(check, p) {
             return _.at(check, p)[0]
         },
+        updateEndpoint: function(event){
+            if (app.timeout) {
+                clearTimeout(app.timeout)
+                app.timeout = null
+            }
+            app.endpoint = prompt("Spock Endpoint", "http://localhost:8080")
+            app.fetchChecks()
+        },
+        refreshEndpoint: function(event) {
+            if (app.timeout) {
+                clearTimeout(app.timeout)
+                app.timeout = null
+            }
+            app.fetchChecks()
+        },
         fetchChecks: function() {
             app = this
             app.checks = []
@@ -30,12 +47,9 @@ new Vue({
             .then(function (response) { return response.json() })
             .then(function (checks) { 
                 app.checks = _.values(checks) 
-                setTimeout(app.fetchChecks, 60000)
+                app.timeout = setTimeout(app.fetchChecks, app.every)
             })
-            .catch(function () { 
-                app.endpoint = prompt("Spock Endpoint", "http://localhost:8080")
-                app.fetchChecks()
-            })
+            .catch(function () {})
         }
     }
 })
