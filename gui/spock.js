@@ -2,7 +2,7 @@ new Vue({
     el: "#spock",
     data: {
         timeout: null, 
-        every: "1000",
+        every: "60000",
         endpoint: "http://localhost:8080",
         checks: []
     },
