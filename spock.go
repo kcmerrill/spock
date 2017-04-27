@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/kcmerrill/genie/genie"
+	"github.com/kcmerrill/sherlock/sherlock"
 	shutdown "github.com/kcmerrill/shutdown.go"
 	"github.com/kcmerrill/spock/spock"
 )
@@ -20,9 +21,11 @@ var (
 func main() {
 	var logLevel, dir, udp, web, auth string
 	var showVersion bool
+	var events int
 
 	flag.StringVar(&logLevel, "v", "high", "Log level (low|med|high)")
 	flag.StringVar(&dir, "dir", "./", "Root directory where your channels and checks are located")
+	flag.IntVar(&events, "events", 100, "How many events we should save")
 	flag.StringVar(&udp, "stats-udp-port", "8081", "UDP port for incoming stats")
 	flag.StringVar(&web, "stats-web-port", "80", "HTTP port for incoming stats")
 	flag.StringVar(&auth, "auth", "", "Auth token. No auth if left blank")
@@ -50,6 +53,7 @@ func main() {
 	s := spock.New(
 		dir,
 		genie.New(dir+"lambdas/", "", ""),
+		sherlock.New(events),
 	)
 
 	// start the tracking servers

@@ -28,13 +28,13 @@ func LogLevel(level string) {
 }
 
 // New instance of spock
-func New(dir string, lambda *genie.Genie) *Spock {
+func New(dir string, lambda *genie.Genie, tracker *sherlock.Sherlock) *Spock {
 	log.SetLevel(log.InfoLevel)
 	spock := &Spock{
 		Lambda: lambda,
 		Dir:    dir,
 		Cron:   cron.New(),
-		Track:  sherlock.New(),
+		Track:  tracker,
 	}
 
 	// Create our locks for our maps

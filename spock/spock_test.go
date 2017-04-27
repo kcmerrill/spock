@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/kcmerrill/genie/genie"
+	"github.com/kcmerrill/sherlock/sherlock"
 )
 
 func TestChannels(t *testing.T) {
-	s := New("../test/sample_b/", genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_b/", genie.New("test/lambdas", "", ""), sherlock.New(100))
 	if c, exists := s.Channels["slack"]; !exists {
 		t.Fatalf("Unable to parse channels 'slack'")
 	} else {
@@ -19,7 +20,7 @@ func TestChannels(t *testing.T) {
 }
 
 func TestChecks(t *testing.T) {
-	s := New("../test/sample_b/", genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_b/", genie.New("test/lambdas", "", ""), sherlock.New(100))
 
 	if _, exists := s.Checks["bad-kcmerrill.com"]; !exists {
 		t.Fatalf("Expecting the check 'bad-kcmerrill.com'")
@@ -51,7 +52,7 @@ func TestChecks(t *testing.T) {
 
 func TestLoader(t *testing.T) {
 	// we are in the spock dir ... go up one
-	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""), sherlock.New(100))
 	channels := s.LoadChannels()
 	if channels != "a\n\nb\n\n" {
 		t.Fatalf(channels)
@@ -66,7 +67,7 @@ func TestLoader(t *testing.T) {
 
 func TestGetChannel(t *testing.T) {
 	// we are in the spock dir ... go up one
-	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""), sherlock.New(100))
 	channels := s.LoadChannels()
 	if channels != "a\n\nb\n\n" {
 		t.Fatalf(channels)
@@ -81,7 +82,7 @@ func TestGetChannel(t *testing.T) {
 
 // verify our defaults are loaded
 func TestLoadDefaults(t *testing.T) {
-	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""))
+	s := New("../test/sample_a/", genie.New("test/lambdas", "", ""), sherlock.New(100))
 	if _, exists := s.Lambda.Lambdas["slack"]; !exists {
 		t.Fatalf("Expecting the 'slack' lambda to be enabled by default")
 	}
