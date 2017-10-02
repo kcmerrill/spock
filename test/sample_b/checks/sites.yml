@@ -1,9 +1,0 @@
-bad-kcmerrill.com:
-    url: http://kcmerrill.com
-    params: status=200 contains=digital
-    fails: slack
-
-kcmerrill.com:
-    url: http://kcmerrill.com
-    params: status=200 contains=digital
-    fails: email slack

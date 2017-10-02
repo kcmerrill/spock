@@ -1,40 +1,25 @@
-hash: 0d050bee749426e7c83f98c4e4711225a7a312acbc0084be7363da2d65d3755b
-updated: 2017-04-26T22:05:02.857700132-06:00
+hash: 6d3494196e2e108040db6a4e116080afddf680c4152350988f6615dcf4a6aad1
+updated: 2017-09-24T23:36:29.623497619-06:00
 imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: 392c28fe23e1c45ddba891b0320b3b5df220beea
-- name: github.com/kcmerrill/genie
-  version: 2376537b7f3d0a217384262b7746ad7a1a392db5
-  subpackages:
-  - genie
+  version: 24fca303ac6da784b9e8269f724ddeb0b2eea5e7
 - name: github.com/kcmerrill/sherlock
-  version: f91dcefc6bf065f0d0f3b61fa09160bdd46babda
+  version: d7b9b2a809a42c0597fb3f31b1fc5adb0fe58fad
   subpackages:
-  - sherlock
-- name: github.com/kcmerrill/shutdown.go
-  version: 908c645a50e570c7813e9fc79f5f1a0966f738e6
-- name: github.com/kcmerrill/slack-go-webhook
-  version: 29717dce32953c21c4f1c1f48f000a95416185a4
-- name: github.com/moul/http2curl
-  version: 4e24498b31dba4683efb9d35c1c8a91e2eda28c8
-- name: github.com/parnurzeal/gorequest
-  version: 5ba0c8579b72c0577d482e07d3d0f01731641ca7
-- name: github.com/pkg/errors
-  version: ff09b135c25aae272398c51a07235b90a75aa4f0
+  - core
 - name: github.com/robfig/cron
-  version: df38d32658d8788cd446ba74db4bb5375c4b0cb3
+  version: b024fc5ea0e34bc3f83d9941c8d60b0622bfaca4
 - name: github.com/sirupsen/logrus
-  version: 10f801ebc38b33738c9d17d50860f484a0988ff5
-- name: golang.org/x/net
-  version: 61557ac0112b576429a0df080e1c2cef5dfbb642
+  version: f006c2ac4710855cf0f916dd6b77acf6b048dc6e
+- name: golang.org/x/crypto
+  version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
-  - publicsuffix
+  - ssh/terminal
 - name: golang.org/x/sys
   version: aaabbdc969c3935a2a7f61efac801e7163c73a2a
   subpackages:
   - unix
-- name: gopkg.in/yaml.v2
-  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
+  - windows
 testImports: []

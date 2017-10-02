@@ -1,25 +1,11 @@
 package spock
 
-import "strings"
+import "time"
 
-// Check contains information needed for our checks
-type Check struct {
-	Params   string            `yaml:"params"`
-	Fails    string            `yaml:"fails"`
-	Recovers string            `yaml:"recovers"`
-	Module   map[string]string `yaml:",inline"`
-	Cron     string            `yaml:"cron"`
-	Try      int               `yaml:"try"`
-	Every    string            `yaml:"every"`
-}
-
-// GetMessages will grab all the modules + arguments
-func (c *Check) GetMessages() map[string]string {
-	msgs := make(map[string]string)
-
-	for key, value := range c.Module {
-		msgs[key] = strings.TrimSpace(value + " " + c.Params)
-	}
-
-	return msgs
+type check struct {
+	Description string    `yaml:"desc"`
+	Cmd         string    `yaml:"cmd"`
+	Try         int       `yaml:"try"`
+	Every       string    `yaml:"every"`
+	checked     time.Time `yaml:"-"`
 }

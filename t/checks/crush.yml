@@ -1,0 +1,5 @@
+crush.kcmerrill.com:
+    desc: My description
+    try: 1
+    cmd: |
+        echo "hello worldd ... again"
