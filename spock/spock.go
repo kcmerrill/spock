@@ -28,7 +28,7 @@ func New(s *Spock) {
 	go func() {
 		for {
 			s.loadChecks()
-			<-time.After(time.Second)
+			<-time.After(s.ReloadConfigInterval)
 		}
 	}()
 
@@ -36,7 +36,7 @@ func New(s *Spock) {
 	go func() {
 		for {
 			s.loadChannels()
-			<-time.After(time.Second)
+			<-time.After(s.ReloadConfigInterval)
 		}
 	}()
 
@@ -46,14 +46,15 @@ func New(s *Spock) {
 
 // Spock holds all of the configuration
 type Spock struct {
-	RootDir      string
-	ChecksDir    string
-	ChannelsDir  string
-	checks       map[string]*check
-	channels     map[string]*channel
-	channelsLock *sync.Mutex
-	checksLock   *sync.Mutex
-	stats        *sherlock.Sherlock
+	RootDir              string
+	ChecksDir            string
+	ChannelsDir          string
+	checks               map[string]*check
+	channels             map[string]*channel
+	channelsLock         *sync.Mutex
+	checksLock           *sync.Mutex
+	ReloadConfigInterval time.Duration
+	stats                *sherlock.Sherlock
 }
 
 func (s *Spock) concatFiles(dir string) []byte {
@@ -88,7 +89,7 @@ func (s *Spock) loadChecks() {
 		if _, exists := s.checks[id]; !exists {
 			// lets add it
 			s.checks[id] = check
-			fmt.Println("new")
+			s.speak(id, fmt.Sprintf("New check"))
 		} else {
 			update := false
 			// no? already exists? Ok ... lets see what's different
@@ -98,7 +99,7 @@ func (s *Spock) loadChecks() {
 
 			if update {
 				s.checks[id] = check
-				fmt.Println("update")
+				s.speak("updated", fmt.Sprintln(id))
 			}
 		}
 	}
@@ -127,4 +128,8 @@ func (s *Spock) conn() {
 		//now := time.Now().Round(time.Second)
 		<-time.After(time.Second)
 	}
+}
+
+func (s *Spock) speak(topic, msg string) {
+	fmt.Println("["+topic+"]", msg)
 }
