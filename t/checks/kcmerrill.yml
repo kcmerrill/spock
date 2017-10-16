@@ -1,6 +1,0 @@
-kcmerrill.com:
-    desc: My description
-    every: 10s
-    try: 3
-    cmd: |
-        echo "hello world"

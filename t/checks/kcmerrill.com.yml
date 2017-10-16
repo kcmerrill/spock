@@ -1,0 +1,14 @@
+kcmerrill.com:
+    desc: My description
+    check:
+        cmd: |
+            sleep 1 && echo "kcmerrill.com" && true
+        every: 10s
+        try: 10
+    fix:
+        cmd: |
+            sleep 1 && echo "kcmerrill.com" && true
+        after: 4
+    ok: ok-channel
+    fails: slack-fail-channel email-fail-channel
+    recovers: slack-recovered email-recovered

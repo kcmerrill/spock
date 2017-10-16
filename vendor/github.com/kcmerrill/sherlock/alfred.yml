@@ -1,8 +1,0 @@
-tdd:
-  watch: ".*?go$"
-  tasks: test
-
-test:
-  summary: Test ...
-  command: |
-    go test $(go list ./... | grep -v /vendor/)

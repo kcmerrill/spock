@@ -1,22 +1,17 @@
 package spock
 
 import (
-	"fmt"
-	"io/ioutil"
-	"path/filepath"
+	"log"
 	"strings"
 	"sync"
 	"time"
 
 	"gopkg.in/yaml.v2"
-
-	sherlock "github.com/kcmerrill/sherlock/core"
 )
 
 // New inits an instance of spock
 func New(s *Spock) {
 	// lets init some basics here
-	s.stats = sherlock.New(100)
 	s.checks = make(map[string]*check)
 	s.channels = make(map[string]*channel)
 	s.channelsLock = &sync.Mutex{}
@@ -24,112 +19,91 @@ func New(s *Spock) {
 	s.ChannelsDir = strings.TrimRight(s.ChannelsDir, "/") + "/"
 	s.ChecksDir = strings.TrimRight(s.ChecksDir, "/") + "/"
 
-	// Start our checks loader
-	go func() {
-		for {
-			s.loadChecks()
-			<-time.After(s.ReloadConfigInterval)
-		}
-	}()
-
-	// Start our channels loader
-	go func() {
-		for {
-			s.loadChannels()
-			<-time.After(s.ReloadConfigInterval)
-		}
-	}()
-
 	// spock has the conn
 	s.conn()
 }
 
-// Spock holds all of the configuration
+// Spock coordinates channels and checks
 type Spock struct {
-	RootDir              string
-	ChecksDir            string
-	ChannelsDir          string
-	checks               map[string]*check
-	channels             map[string]*channel
-	channelsLock         *sync.Mutex
-	checksLock           *sync.Mutex
-	ReloadConfigInterval time.Duration
-	stats                *sherlock.Sherlock
+	CheckInterval time.Duration
+
+	ChecksDir  string
+	checks     map[string]*check
+	checksLock *sync.Mutex
+
+	ChannelsDir  string
+	channels     map[string]*channel
+	channelsLock *sync.Mutex
 }
 
-func (s *Spock) concatFiles(dir string) []byte {
-	files, filesError := filepath.Glob(dir + "*.yml")
-	if filesError != nil {
-		return []byte{}
-	}
-
-	config := []byte{}
-	for _, file := range files {
-		contents, _ := ioutil.ReadFile(file)
-		config = append(config, []byte("\n")...)
-		config = append(config, contents...)
-	}
-
-	return config
-}
-
+// loadChecks reads in all config files and reloads the configuration
 func (s *Spock) loadChecks() {
-	checks := make(map[string]*check)
-	loadedChecks := s.concatFiles(s.ChecksDir)
+	checks := make(map[string]*checkConfig)
+	loadedChecks := combineConfigFiles(s.ChecksDir)
 	s.checksLock.Lock()
 	defer s.checksLock.Unlock()
 	yamlError := yaml.Unmarshal(loadedChecks, &checks)
 	if yamlError != nil {
-		// TODO: output error
+		log.Println("ERROR", "YAML parsing")
 		return
 	}
 
-	for id, check := range checks {
+	for name, lc := range checks {
 		// does this check exist?
-		if _, exists := s.checks[id]; !exists {
-			// lets add it
-			s.checks[id] = check
-			s.speak(id, fmt.Sprintf("New check"))
-		} else {
-			update := false
-			// no? already exists? Ok ... lets see what's different
-			if s.checks[id].Cmd != check.Cmd {
-				update = true
+		if _, exists := s.checks[name]; !exists {
+			// ok. lets add it
+			s.checks[name] = &check{
+				Name:     name,
+				Config:   lc,
+				ExecLock: &sync.Mutex{},
 			}
-
-			if update {
-				s.checks[id] = check
-				s.speak("updated", fmt.Sprintln(id))
+			log.Println("NEW CHECK", name)
+		} else {
+			if s.checks[name].id() != lc.id() {
+				s.checks[name].Config = lc
+				log.Println("UPDATED CHECK", name)
 			}
 		}
 	}
 }
 
+// loadChannels reads in all config files and reloads the configuration
 func (s *Spock) loadChannels() {
-	channels := s.concatFiles(s.ChannelsDir)
+	channels := make(map[string]*channel)
+	loadedChannels := combineConfigFiles(s.ChannelsDir)
 	s.channelsLock.Lock()
 	defer s.channelsLock.Unlock()
-	yamlError := yaml.Unmarshal(channels, &s.channels)
+	yamlError := yaml.Unmarshal(loadedChannels, &channels)
 	if yamlError != nil {
-		// TODO: output error
+		log.Println("CHANNEL ERROR", "YAML parsing")
 		return
 	}
-	// TODO: Show updated/deleted channels
-}
 
-func (s *Spock) conn() {
-	for {
-		s.checksLock.Lock()
-		//for id, check := range s.checks {
-		//fmt.Println(id, ">", check.checked, time.Now())
-		//s.checks[id].checked = time.Now()
-		//}
-		s.checksLock.Unlock()
-		//now := time.Now().Round(time.Second)
-		<-time.After(time.Second)
+	for name, c := range channels {
+		// does this check exist?
+		if _, exists := s.channels[name]; !exists {
+			// ok. lets add it
+			s.channels[name] = &channel{}
+			log.Println("NEW CHANNEL", name)
+		} else {
+			if s.channels[name].id() != c.id() {
+				s.channels[name] = c
+				log.Println("UPDATED CHANNEL", name)
+			}
+		}
 	}
 }
 
-func (s *Spock) speak(topic, msg string) {
-	fmt.Println("["+topic+"]", msg)
+// conn is the central hub for dispatching checks
+func (s *Spock) conn() {
+	for {
+		s.loadChecks()
+		s.loadChannels()
+		for _, check := range s.checks {
+			if check.LastChecked.Add(check.interval()).Before(time.Now()) {
+				check.check(s.channels)
+			}
+		}
+		<-time.After(s.CheckInterval)
+	}
 }

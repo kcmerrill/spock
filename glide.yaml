@@ -1,7 +1,0 @@
-package: github.com/kcmerrill/spock
-import:
-- package: github.com/kcmerrill/sherlock
-  subpackages:
-  - core
-- package: github.com/robfig/cron
-  version: ^1.0.0

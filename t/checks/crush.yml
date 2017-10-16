@@ -1,5 +1,6 @@
 crush.kcmerrill.com:
     desc: My description
-    try: 1
-    cmd: |
-        echo "hello world ... again"
+    check:
+        every: 5s
+        cmd: |
+            sleep 1 && echo "crush.kcmerrill.com" && false
